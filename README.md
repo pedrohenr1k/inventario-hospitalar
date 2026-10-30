@@ -90,3 +90,9 @@ Para instalar as bibliotecas necessárias, execute:
 
 ```bash
 python -m pip install -r requirements.txt
+
+##  Revisão Técnica
+
+O desenvolvimento do MVP considera aspectos de organização do código, validação de dados e confiabilidade das operações com o banco de dados.
+
+A revisão técnica busca identificar oportunidades de melhoria na separação das responsabilidades, na legibilidade e no tratamento de falhas, contribuindo para a manutenção e a evolução do sistema.
