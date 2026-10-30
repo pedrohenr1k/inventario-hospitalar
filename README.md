@@ -15,7 +15,7 @@ A aplicação permite registrar ativos, informar suas quantidades, definir os lo
 - **Banco de dados local:** armazenamento das informações utilizando SQLite.
 - **Validação de dados:** verificação de campos obrigatórios e da quantidade informada.
 
-## 🛠️ Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 - **Python:** linguagem de programação utilizada no desenvolvimento.
 - **Gradio:** biblioteca utilizada para construir a interface web.
@@ -33,7 +33,7 @@ inventario-hospitalar/
 
 O arquivo `hospital_inventory.db` é criado localmente quando a aplicação é executada, caso ainda não exista.
 
-## ⚙️ Como Executar o Projeto
+##  Como Executar o Projeto
 
 ### 1. Instale o Python
 
