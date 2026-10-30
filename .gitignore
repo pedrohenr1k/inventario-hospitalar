@@ -1,3 +1,4 @@
+```gitignore
 __pycache__/
 *.pyc
 venv/
@@ -7,3 +8,4 @@ hospital_inventory.db
 .coverage
 htmlcov/
 .pytest_cache/
+```

@@ -1,8 +1,9 @@
+```yaml
 name: CI - Inventário Hospitalar
 
 on:
   push:
-    branches: [main]
+    branches: [main, revisao-tecnica]
   pull_request:
     branches: [main]
 
@@ -36,3 +37,4 @@ jobs:
 
       - name: Exibir relatório de cobertura
         run: python -m coverage report -m
+```
