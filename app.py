@@ -228,13 +228,12 @@ with gr.Blocks(title="Inventário Hospitalar") as demo:
         outputs=asset_table
     )
 
-
 # Iniciar a aplicação
 if __name__ == "__main__":
     import os
 
     demo.launch(
-        server_name="127.0.0.1",
+        server_name="0.0.0.0",
         server_port=int(os.environ.get("PORT", 7862)),
         share=False
     )
