@@ -1,4 +1,4 @@
-
+import os
 import sqlite3
 import gradio as gr
 
@@ -8,21 +8,34 @@ DB_NAME = "hospital_inventory.db"
 
 # Criar a tabela do banco de dados
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS assets (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            quantity INTEGER NOT NULL,
-            location TEXT NOT NULL,
-            status TEXT NOT NULL
-        )
-    """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS assets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                quantity INTEGER NOT NULL,
+                location TEXT NOT NULL,
+                status TEXT NOT NULL
+            )
+        """)
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+
+
+# Consultar os ativos cadastrados
+def list_assets():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT id, name, quantity, location, status
+            FROM assets
+            ORDER BY id DESC
+        """)
+
+        return cursor.fetchall()
 
 
 # Cadastrar um ativo
@@ -36,16 +49,26 @@ def add_asset(name, quantity, location, status):
             location
         )
 
-    if quantity is None or not float(quantity).is_integer():
+    try:
+        if quantity is None or not float(quantity).is_integer():
+            return (
+                "Erro: Informe uma quantidade inteira.",
+                list_assets(),
+                name,
+                quantity,
+                location
+            )
+
+        quantity = int(quantity)
+
+    except (ValueError, TypeError):
         return (
-            "Erro: Informe uma quantidade inteira.",
+            "Erro: Informe uma quantidade válida.",
             list_assets(),
             name,
             quantity,
             location
         )
-
-    quantity = int(quantity)
 
     if quantity < 0:
         return (
@@ -74,45 +97,36 @@ def add_asset(name, quantity, location, status):
             location
         )
 
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
+    try:
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        INSERT INTO assets (name, quantity, location, status)
-        VALUES (?, ?, ?, ?)
-        """,
-        (name.strip(), quantity, location, status)
-    )
+            cursor.execute("""
+                INSERT INTO assets (name, quantity, location, status)
+                VALUES (?, ?, ?, ?)
+            """, (name.strip(), quantity, location, status))
 
-    conn.commit()
-    conn.close()
+            conn.commit()
 
-    return (
-        "Ativo cadastrado com sucesso!",
-        list_assets(),
-        "",
-        1,
-        None
-    )
+        return (
+            "Ativo cadastrado com sucesso!",
+            list_assets(),
+            "",
+            1,
+            None
+        )
 
-
-# Consultar os ativos cadastrados
-def list_assets():
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT id, name, quantity, location, status FROM assets"
-    )
-
-    ativos = cursor.fetchall()
-    conn.close()
-
-    return ativos
+    except sqlite3.Error:
+        return (
+            "Erro ao salvar o ativo no banco de dados.",
+            list_assets(),
+            name,
+            quantity,
+            location
+        )
 
 
-# Criar o banco de dados
+# Inicializar o banco de dados
 init_db()
 
 
@@ -120,6 +134,7 @@ init_db()
 with gr.Blocks(title="Inventário Hospitalar") as demo:
 
     gr.Markdown("# Sistema de Inventário Hospitalar")
+
     gr.Markdown(
         "Sistema para cadastro e consulta de equipamentos e materiais de TI."
     )
@@ -188,7 +203,7 @@ with gr.Blocks(title="Inventário Hospitalar") as demo:
                 interactive=False
             )
 
-    # Cadastrar e atualizar a tabela
+    # Cadastrar ativo e atualizar a tabela
     submit_btn.click(
         fn=add_asset,
         inputs=[
@@ -214,10 +229,12 @@ with gr.Blocks(title="Inventário Hospitalar") as demo:
     )
 
 
-# Iniciar o sistema
+# Iniciar a aplicação
 if __name__ == "__main__":
+    import os
+
     demo.launch(
         server_name="127.0.0.1",
-        server_port=7861,
+        server_port=int(os.environ.get("PORT", 7862)),
         share=False
     )
