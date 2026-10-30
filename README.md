@@ -82,3 +82,11 @@ Demonstrar uma solução inicial para o controle de equipamentos e materiais de 
 ##  Status do Projeto
 
 MVP em desenvolvimento.
+
+
+## Instalação de Dependências
+
+Para instalar as bibliotecas necessárias, execute:
+
+```bash
+python -m pip install -r requirements.txt
